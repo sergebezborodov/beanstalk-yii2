@@ -1,0 +1,28 @@
+{
+    "name": "sergebezborodov/beanstalk",
+    "type": "library",
+    "description": "Beanstalk component for Yii Framework 2",
+    "keywords": ["beanstalk","queries", "yii2"],
+
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Serge Bezborodov",
+            "email": "serge@bezborodov.net",
+            "homepage": "http://bezborodov.net",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "dev-master",
+        "yiisoft/yii2-composer": "dev-master",
+        "davidpersson/beanstalk" : "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "autoload": {
+        "psr-0": { "sergebezborodov\\": "./src" }
+    }
+}
