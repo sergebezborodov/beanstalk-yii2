@@ -67,13 +67,13 @@ class Application extends \yii\console\Application
                         $beanstalk->bury($job['id'], 0);
                     }
                 } catch (\Exception $e) {
-                    $this->controller->stderr($e->getMessage()."\n", Console::FG_RED);
+                    fwrite(STDERR, Console::ansiFormat($e->getMessage()."\n", [Console::FG_RED]));
                     $beanstalk->bury($job['id'], 0);
                 }
             }
         } catch (\Exception $e) {
             $response->exitStatus = 1;
-            $this->controller->stderr($e->getMessage()."\n", Console::FG_RED);
+            fwrite(STDERR, Console::ansiFormat($e->getMessage()."\n", [Console::FG_RED]));
         }
 
         return $response;
