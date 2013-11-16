@@ -55,7 +55,7 @@ class Router extends Component
     public function getRoute($tube)
     {
         if (empty($this->_routes[$tube])) {
-            throw new Exception("There are no route for tube '{$tube}''");
+            throw new Exception("There are no route for tube '{$tube}'");
         }
 
         return $this->_routes[$tube];

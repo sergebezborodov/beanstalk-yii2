@@ -44,6 +44,8 @@ class Application extends \yii\console\Application
                         throw new Exception("Unable to watch {$tube}");
                     }
                 }
+            } else {
+                $tubes = $beanstalk->listTubes();
             }
 
             $onlyOneTube = count($tubes) == 1;
