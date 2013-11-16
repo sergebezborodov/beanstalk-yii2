@@ -32,6 +32,13 @@ class Beanstalk extends Component
      */
     public $persistent = true;
 
+    /**
+     * @var int default job time to execute
+     */
+    public $defaultJobTtr = 3600;
+
+    private $_currTube;
+
 
     /**
      * @var \Socket_Beanstalk
@@ -71,4 +78,28 @@ class Beanstalk extends Component
     {
         return $this->_client->connected;
     }
+
+    /**
+     * Adds job to query
+     *
+     * @param string $tube tube name
+     * @param string $data data to worker
+     * @param int|null $ttl time to execute this job
+     * @param int $priority Jobs with smaller priority values will be scheduled
+     *              before jobs with larger priorities. The most urgent priority is 0;
+     *              the least urgent priority is 4294967295.
+     * @param int $delay delay before insert job into work query
+     * @return bool
+     */
+    public function addJob($tube, $data, $ttl = null, $priority = 0, $delay = 0)
+    {
+        $ttl = $ttl ?: $this->defaultJobTtr;
+        if ($tube != $this->_currTube) {
+            $this->_client->choose($tube);
+            $this->_currTube = $tube;
+        }
+
+        return $this->_client->put($priority, $delay, $ttl, $data);
+    }
+
 }

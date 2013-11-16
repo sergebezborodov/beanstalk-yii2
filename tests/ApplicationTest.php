@@ -26,6 +26,4 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
             $this->fail('You have to run beanstalk server');
         }
     }
-
-
 }
