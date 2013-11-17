@@ -29,10 +29,7 @@ class Router extends Component
         $this->_routes = [];
         foreach ($routes as $tube => $route) {
             if (!$tube) {
-                throw new Exception('Tube name must be exist');
-            }
-            if (count(explode('/', $route)) != 2) {
-                throw new Exception("Incorrect route defined for tube '{$tube}'");
+                throw new Exception('Tube name must exists');
             }
             $this->_routes[$tube] = $route;
         }
