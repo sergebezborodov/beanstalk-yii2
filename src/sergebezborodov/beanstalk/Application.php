@@ -152,6 +152,9 @@ class Application extends \yii\console\Application
 
     public function signalDispatch()
     {
+        if (!extension_loaded('pcntl')) {
+            return;
+        }
         pcntl_signal_dispatch();
     }
 }
