@@ -61,17 +61,7 @@ class Application extends \yii\console\Application
 
         if (extension_loaded('pcntl')) {
             declare(ticks = 1);
-            pcntl_signal(SIGINT, "signal_handler");
-            function signal_handler($signal) use ($this) {
-                switch($signal) {
-                    case SIGINT:
-                        if ($this->_isWorkingNow) {
-                            $this->_needTerminate = true;
-                        } else {
-                            $this->endApp();
-                        }
-                }
-            }
+            pcntl_signal(SIGINT, [$this, 'signalHandler']);
         }
 
         try {
@@ -132,5 +122,17 @@ class Application extends \yii\console\Application
     protected function endApp()
     {
         exit;
+    }
+
+    public function signalHandler($signal)
+    {
+        switch($signal) {
+            case SIGINT:
+                if ($this->_isWorkingNow) {
+                    $this->_needTerminate = true;
+                } else {
+                    $this->endApp();
+                }
+        }
     }
 }
