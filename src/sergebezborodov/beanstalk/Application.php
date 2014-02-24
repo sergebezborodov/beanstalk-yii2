@@ -13,6 +13,28 @@ class Application extends \yii\console\Application
     public $enableCoreCommands = false;
 
     /**
+     * Handle system signals
+     * works when pcntl enabled
+     *
+     * @var bool
+     */
+    public $handleSignals = true;
+
+    /**
+     * Flag when script need to be terminated
+     *
+     * @var bool
+     */
+    private $_needTerminate = false;
+
+    /**
+     * Flat when task is currently working
+     *
+     * @var bool
+     */
+    private $_isWorkingNow = false;
+
+    /**
      * @inheritdoc
      */
     public function registerCoreComponents()
@@ -36,6 +58,21 @@ class Application extends \yii\console\Application
         $beanstalk = $this->getComponent('beanstalk');
         /** @var Router $router */
         $router = $this->getComponent('router');
+
+        if (extension_loaded('pcntl')) {
+            declare(ticks = 1);
+            pcntl_signal(SIGINT, "signal_handler");
+            function signal_handler($signal) use ($this) {
+                switch($signal) {
+                    case SIGINT:
+                        if ($this->_isWorkingNow) {
+                            $this->_needTerminate = true;
+                        } else {
+                            $this->endApp();
+                        }
+                }
+            }
+        }
 
         try {
             if ($tubes = $request->getParams()) {
@@ -62,15 +99,26 @@ class Application extends \yii\console\Application
                 }
 
                 try {
+                    $this->_isWorkingNow = true;
                     $actResp = $this->runAction($route, [$job['body']]);
                     if ($actResp) {
                         $beanstalk->delete($job['id']);
                     } else {
                         $beanstalk->bury($job['id'], 0);
                     }
+                    $this->_isWorkingNow = false;
+
+                    if ($this->_needTerminate) {
+                        $this->endApp();
+                    }
                 } catch (\Exception $e) {
                     fwrite(STDERR, Console::ansiFormat($e->getMessage()."\n", [Console::FG_RED]));
                     $beanstalk->bury($job['id'], 0);
+
+                    $this->_isWorkingNow = false;
+                    if ($this->_needTerminate) {
+                        $this->endApp();
+                    }
                 }
             }
         } catch (\Exception $e) {
@@ -79,5 +127,10 @@ class Application extends \yii\console\Application
         }
 
         return $response;
+    }
+
+    protected function endApp()
+    {
+        exit;
     }
 }
