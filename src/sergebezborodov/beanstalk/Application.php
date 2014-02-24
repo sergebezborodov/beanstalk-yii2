@@ -59,11 +59,6 @@ class Application extends \yii\console\Application
         /** @var Router $router */
         $router = $this->getComponent('router');
 
-        if (extension_loaded('pcntl')) {
-            declare(ticks = 1);
-            pcntl_signal(SIGINT, [$this, 'signalHandler']);
-        }
-
         try {
             if ($tubes = $request->getParams()) {
                 foreach ($tubes as $tube) {
@@ -80,7 +75,9 @@ class Application extends \yii\console\Application
             $route = $router->getRoute($tube);
 
             while (true) {
+                $this->unregisterSignalHandler();
                 $job = $beanstalk->reserve();
+                $this->registerSignalHandler();
 
                 if (!$onlyOneTube) {
                     $info = $beanstalk->statsJob($job['id']);
@@ -90,6 +87,7 @@ class Application extends \yii\console\Application
 
                 try {
                     $this->_isWorkingNow = true;
+
                     $actResp = $this->runAction($route, [$job['body']]);
                     if ($actResp) {
                         $beanstalk->delete($job['id']);
@@ -98,6 +96,7 @@ class Application extends \yii\console\Application
                     }
                     $this->_isWorkingNow = false;
 
+                    $this->signalDispatch();
                     if ($this->_needTerminate) {
                         $this->endApp();
                     }
@@ -124,15 +123,35 @@ class Application extends \yii\console\Application
         exit;
     }
 
-    public function signalHandler($signal)
+    private function registerSignalHandler()
     {
-        switch($signal) {
-            case SIGINT:
-                if ($this->_isWorkingNow) {
-                    $this->_needTerminate = true;
-                } else {
-                    $this->endApp();
-                }
+        if (!extension_loaded('pcntl')) {
+            return;
         }
+
+        pcntl_signal(SIGINT, function ($signal) {
+            fwrite(STDOUT, Console::ansiFormat("Received SIGINT will exit soon\n", [Console::FG_RED]));
+            if ($this->_isWorkingNow) {
+                $this->_needTerminate = true;
+            } else {
+                $this->endApp();
+            }
+        });
+        declare(ticks = 1);
+        register_tick_function([$this, 'signalDispatch']);
+    }
+
+    private function unregisterSignalHandler()
+    {
+        if (!extension_loaded('pcntl')) {
+            return;
+        }
+        pcntl_signal(SIGINT, SIG_DFL);
+        unregister_tick_function([$this, 'signalDispatch']);
+    }
+
+    public function signalDispatch()
+    {
+        pcntl_signal_dispatch();
     }
 }
