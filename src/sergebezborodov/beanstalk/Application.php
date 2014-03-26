@@ -55,9 +55,9 @@ class Application extends \yii\console\Application
         $request = $this->getRequest();
         $response = $this->getResponse();
         /** @var Beanstalk $info */
-        $beanstalk = $this->getComponent('beanstalk');
+        $beanstalk = $this->get('beanstalk');
         /** @var Router $router */
-        $router = $this->getComponent('router');
+        $router = $this->get('router');
 
         try {
             if ($tubes = $request->getParams()) {
