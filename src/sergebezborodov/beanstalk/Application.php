@@ -20,6 +20,14 @@ class Application extends \yii\console\Application
      */
     public $handleSignals = true;
 
+
+    /**
+     * Exit worker when handle database exception
+     *
+     * @var bool
+     */
+    public $exitOnDbException = false;
+
     /**
      * Flag when script need to be terminated
      *
@@ -103,6 +111,10 @@ class Application extends \yii\console\Application
                 } catch (\Exception $e) {
                     fwrite(STDERR, Console::ansiFormat($e->getMessage()."\n", [Console::FG_RED]));
                     $beanstalk->bury($job['id'], 0);
+
+                    if ($e instanceof \yii\db\Exception && $this->exitOnDbException) {
+                        $this->_needTerminate = true;
+                    }
 
                     $this->_isWorkingNow = false;
                     if ($this->_needTerminate) {
