@@ -109,7 +109,7 @@ class Application extends \yii\console\Application
                         $this->endApp();
                     }
                 } catch (\Exception $e) {
-                    fwrite(STDERR, Console::ansiFormat($e->getMessage()."\n", [Console::FG_RED]));
+                    fwrite(STDERR, Console::ansiFormat($e."\n", [Console::FG_RED]));
                     $beanstalk->bury($job['id'], 0);
 
                     if ($e instanceof \yii\db\Exception && $this->exitOnDbException) {
@@ -124,7 +124,7 @@ class Application extends \yii\console\Application
             }
         } catch (\Exception $e) {
             $response->exitStatus = 1;
-            fwrite(STDERR, Console::ansiFormat($e->getMessage()."\n", [Console::FG_RED]));
+            fwrite(STDERR, Console::ansiFormat($e."\n", [Console::FG_RED]));
         }
 
         return $response;
