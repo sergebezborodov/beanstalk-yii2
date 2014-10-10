@@ -8,7 +8,7 @@ Queries is important part for any big project. I used Gearman for years in my pa
 Install it by composer, add to composer.json
 
 ```
-"sergebezborodov/beanstalk": "dev-master",
+"sergebezborodov/beanstalk-yii2": "dev-master"
 ```
 
 ## How to configure
