@@ -15,8 +15,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "yiisoft/yii2": "dev-master",
-        "yiisoft/yii2-composer": "dev-master",
+        "yiisoft/yii2": "*",
+        "yiisoft/yii2-composer": "*",
         "davidpersson/beanstalk" : "dev-master"
     },
     "require-dev": {
