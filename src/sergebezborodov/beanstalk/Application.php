@@ -10,6 +10,8 @@ use yii\helpers\Console;
  */
 class Application extends \yii\console\Application
 {
+    const EXIT_PARAM = '--exit-after-complete';
+
     public $enableCoreCommands = false;
 
     /**
@@ -67,8 +69,17 @@ class Application extends \yii\console\Application
         /** @var Router $router */
         $router = $this->get('router');
 
+        $exitAfterComplete = false;
         try {
-            if ($tubes = $request->getParams()) {
+
+            $params = $request->getParams();
+            if ($pos = array_search(self::EXIT_PARAM, $params)) {
+                $exitAfterComplete = true;
+                unset($params[$pos]);
+            }
+            $tubes = $params;
+
+            if ($tubes) {
                 foreach ($tubes as $tube) {
                     if (!$beanstalk->watch($tube)) {
                         throw new Exception("Unable to watch {$tube}");
@@ -105,7 +116,7 @@ class Application extends \yii\console\Application
                     $this->_isWorkingNow = false;
 
                     $this->signalDispatch();
-                    if ($this->_needTerminate) {
+                    if ($this->_needTerminate || $exitAfterComplete) {
                         $this->endApp();
                     }
                 } catch (\Exception $e) {
