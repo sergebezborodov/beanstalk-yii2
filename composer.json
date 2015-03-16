@@ -17,7 +17,7 @@
         "php": ">=5.4.0",
         "yiisoft/yii2": "*",
         "yiisoft/yii2-composer": "*",
-        "davidpersson/beanstalk" : "dev-master#669fcd21880bdff0f514f5ed076cd76f2aea2592"
+        "davidpersson/beanstalk" : "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"

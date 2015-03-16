@@ -3,6 +3,7 @@
 
 namespace sergebezborodov\beanstalk;
 
+use Beanstalk\Client;
 use yii\base\Component;
 
 /**
@@ -41,7 +42,7 @@ class Beanstalk extends Component
 
 
     /**
-     * @var \Socket_Beanstalk
+     * @var Client
      */
     protected $_client;
 
@@ -49,7 +50,7 @@ class Beanstalk extends Component
     {
         parent::init();
 
-        $this->_client = new \Socket_Beanstalk([
+        $this->_client = new Client([
             'persistent' => $this->persistent,
             'host'       => $this->host,
             'port'       => $this->port,
@@ -95,7 +96,7 @@ class Beanstalk extends Component
     {
         $ttl = $ttl ?: $this->defaultJobTtr;
         if ($tube != $this->_currTube) {
-            $this->_client->choose($tube);
+            $this->_client->useTube($tube);
             $this->_currTube = $tube;
         }
 
