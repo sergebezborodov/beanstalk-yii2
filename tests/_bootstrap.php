@@ -1,6 +1,5 @@
 <?php
 
-
 define('DS', DIRECTORY_SEPARATOR);
 defined('YII_ENABLE_EXCEPTION_HANDLER') or define('YII_ENABLE_EXCEPTION_HANDLER', false);
 defined('YII_ENABLE_ERROR_HANDLER') or define('YII_ENABLE_ERROR_HANDLER', false);
@@ -11,9 +10,8 @@ $_SERVER['SCRIPT_FILENAME'] = __FILE__;
 
 define('ROOT', realpath(__DIR__.DS.'..'));
 require_once ROOT.'/vendor/autoload.php';
-require ROOT. '/vendor/yiisoft/yii2/yii/Yii.php';
+require ROOT. '/vendor/yiisoft/yii2/Yii.php';
 
-$app = new \sergebezborodov\beanstalk\Application([
-    'id' => 'beanstalk-app',
-    'basePath' => __DIR__,
-]);
+$config = require_once ROOT . "/tests/config.php";
+
+$app = new \sergebezborodov\beanstalk\Application($config);

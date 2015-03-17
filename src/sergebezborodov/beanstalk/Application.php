@@ -47,11 +47,9 @@ class Application extends \yii\console\Application
     /**
      * @inheritdoc
      */
-    public function registerCoreComponents()
+    public function coreComponents()
     {
-        parent::registerCoreComponents();
-
-        $this->setComponents([
+        return array_merge(parent::coreComponents(), [
             'router'    => ['class' => '\sergebezborodov\beanstalk\Router'],
             'beanstalk' => ['class' => '\sergebezborodov\beanstalk\Beanstalk'],
         ]);
