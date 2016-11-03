@@ -105,7 +105,7 @@ class Application extends \yii\console\Application
                 try {
                     $this->_isWorkingNow = true;
 
-                    $actResp = $this->runAction($route, [$job['body']]);
+                    $actResp = $this->runAction($route, [$job['body'], $job['id']);
                     if ($actResp) {
                         $beanstalk->delete($job['id']);
                     } else {
